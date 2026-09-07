@@ -1,7 +1,7 @@
 import { Component, signal, inject, computed } from '@angular/core';
 import { RecipeCard } from './recipe-card/recipe-card';
 import { RecipeService } from './services/recipe';
-import { FilterType, Recipe } from './models/recipe.model';
+import { FilterType, Difficulty } from './models/recipe.model';
 
 @Component({
   imports: [RecipeCard],
@@ -14,13 +14,10 @@ export class App {
 
   private readonly recipeService = inject(RecipeService);
 
-  readonly allRecipes = computed<Recipe[]>(() => this.recipeService.recipes());
-
-  readonly filteredRecipes = computed<Recipe[]>(() => this.recipeService.filteredRecipes());
-
-  readonly favoriteRecipesCount = computed<number>(() => this.recipeService.favoriteCount());
-
-  readonly currentFilter = computed<FilterType>(() => this.recipeService.currentFilter());
+  readonly allRecipes = this.recipeService.recipes;
+  readonly filteredRecipes = this.recipeService.filteredRecipes;
+  readonly favoriteRecipesCount = this.recipeService.favoriteCount;
+  readonly currentFilter = this.recipeService.currentFilter;
 
   protected onAddRecipe(
     event: SubmitEvent,
@@ -39,7 +36,7 @@ export class App {
       title: titleInput.value.trim(),
       description: descriptionInput.value.trim(),
       prepTimeMinutes: Number(timeInput.value) || 15,
-      difficulty: difficultySelect.value as 'Easy' | 'Medium' | 'Hard',
+      difficulty: difficultySelect.value as Difficulty,
     });
 
     // 4. Clear the boxes
