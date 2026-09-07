@@ -1,0 +1,26 @@
+<article class="recipe-card">
+  <div class="card-header">
+    <h2>{{ recipe().title }}</h2>
+    <span class="badge badge-{{ recipe().difficulty.toLowerCase() }}">
+      {{ recipe().difficulty }}
+    </span>
+  </div>
+  <p class="description">{{ recipe().description }}</p>
+  <div class="card-footer">
+    <span>⏱️ {{ recipe().prepTimeMinutes }} mins</span>
+    <div class="btns-footer">
+      <button
+        class="btn-favorite"
+        [class.is-favorite]="recipe().isFavorite"
+        (click)="onFavoriteClick()"
+      >
+        @if (recipe().isFavorite) {
+          ❤️
+        } @else {
+          ❤️
+        }
+      </button>
+      <button class="btn-delete" (click)="onDeleteClick()">🗑️</button>
+    </div>
+  </div>
+</article>

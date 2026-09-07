@@ -1,0 +1,101 @@
+<main class="container">
+  <header>
+    <h1>{{ title() }}</h1>
+    <p>Discover, save, and organize your favorite recipes.</p>
+    <p class="stats">
+      {{ recipeService.recipes().length }} Total 🍳 | {{ recipeService.favoriteCount() }} Favorite
+      ❤️
+    </p>
+    <button class="btn-add-recipe" (click)="recipeModal.showModal()">+ Add Recipe</button>
+  </header>
+
+  <!-- Search Bar -->
+  <div class="search-bar">
+    <input
+      type="text"
+      #searchBar
+      (input)="recipeService.searchQuery.set(searchBar.value)"
+      placeholder="🔍 Search recipes by title or ingredients..."
+    />
+  </div>
+
+  <!-- Filter Bar -->
+  <nav class="filter-bar">
+    <button
+      class="filter-btn"
+      (click)="recipeService.setFilter('all')"
+      [class.active]="recipeService.currentFilter() === 'all'"
+    >
+      All ({{ recipeService.recipes().length }})
+    </button>
+    <button
+      class="filter-btn"
+      (click)="recipeService.setFilter('favorites')"
+      [class.active]="recipeService.currentFilter() === 'favorites'"
+    >
+      Favorites ❤️({{ recipeService.favoriteCount() }})
+    </button>
+    <button
+      class="filter-btn"
+      (click)="recipeService.setFilter('quick')"
+      [class.active]="recipeService.currentFilter() === 'quick'"
+    >
+      Under 20min ⚡️
+    </button>
+  </nav>
+
+  <section class="recipe-grid">
+    @for (filteredRecipe of recipeService.filteredRecipes(); track filteredRecipe.id) {
+      <app-recipe-card
+        [recipe]="filteredRecipe"
+        (toggleFavorite)="recipeService.toggleFavorite($event)"
+        (deleteRecipe)="recipeService.deleteRecipe($event)"
+      />
+    } @empty {
+      <p class="empty-state">No recipes in your recipe box yet!</p>
+    }
+  </section>
+</main>
+
+<!-- New Recipe Modal -->
+<dialog #recipeModal class="modal-new-recipe">
+  <form
+    class="modal-form"
+    (submit)="
+      onAddRecipe(recipeModal, titleInput, descriptionInput, timeInput, difficultySelect);
+      $event.preventDefault()
+    "
+  >
+    <div class="form-group">
+      <label>Title</label>
+      <input class="modal-title" #titleInput type="text" required placeholder="Recipe Title..." />
+    </div>
+    <div class="form-group">
+      <label>Description</label>
+      <textarea
+        class="modal-description"
+        #descriptionInput
+        required
+        placeholder="Write recipe description here!"
+      ></textarea>
+    </div>
+
+    <div class="form-group">
+      <label>Time</label>
+      <input class="modal-time" #timeInput type="number" min="1" placeholder="15" />
+    </div>
+
+    <div class="form-group">
+      <label>Difficulty Level</label>
+      <select class="modal-difficulty-select" #difficultySelect>
+        <option value="Easy">Easy</option>
+        <option value="Medium">Medium</option>
+        <option value="Hard">Hard</option>
+      </select>
+    </div>
+    <button class="btn-modal btn-modal-add" type="submit">Add Recipe</button>
+    <button class="btn-modal btn-modal-cancel" type="button" (click)="recipeModal.close()">
+      Cancel
+    </button>
+  </form>
+</dialog>
