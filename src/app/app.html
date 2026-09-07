@@ -3,10 +3,9 @@
     <h1>{{ title() }}</h1>
     <p>Discover, save, and organize your favorite recipes.</p>
     <p class="stats">
-      {{ recipeService.recipes().length }} Total 🍳 | {{ recipeService.favoriteCount() }} Favorite
-      ❤️
+      {{ allRecipes().length }} Total 🍳 | {{ favoriteRecipesCount() }} Favorite ❤️
     </p>
-    <button class="btn-add-recipe" (click)="recipeModal.showModal()">+ Add Recipe</button>
+    <button class="btn-add-recipe" (click)="showRecipeModal(recipeModal)">+ Add Recipe</button>
   </header>
 
   <!-- Search Bar -->
@@ -14,7 +13,7 @@
     <input
       type="text"
       #searchBar
-      (input)="recipeService.searchQuery.set(searchBar.value)"
+      (input)="setSearchQuery(searchBar.value)"
       placeholder="🔍 Search recipes by title or ingredients..."
     />
   </div>
@@ -23,33 +22,33 @@
   <nav class="filter-bar">
     <button
       class="filter-btn"
-      (click)="recipeService.setFilter('all')"
-      [class.active]="recipeService.currentFilter() === 'all'"
+      (click)="setFilter('all')"
+      [class.active]="currentFilter() === 'all'"
     >
-      All ({{ recipeService.recipes().length }})
+      All ({{ allRecipes().length }})
     </button>
     <button
       class="filter-btn"
-      (click)="recipeService.setFilter('favorites')"
-      [class.active]="recipeService.currentFilter() === 'favorites'"
+      (click)="setFilter('favorites')"
+      [class.active]="currentFilter() === 'favorites'"
     >
-      Favorites ❤️({{ recipeService.favoriteCount() }})
+      Favorites ❤️({{ favoriteRecipesCount() }})
     </button>
     <button
       class="filter-btn"
-      (click)="recipeService.setFilter('quick')"
-      [class.active]="recipeService.currentFilter() === 'quick'"
+      (click)="setFilter('quick')"
+      [class.active]="currentFilter() === 'quick'"
     >
       Under 20min ⚡️
     </button>
   </nav>
 
   <section class="recipe-grid">
-    @for (filteredRecipe of recipeService.filteredRecipes(); track filteredRecipe.id) {
+    @for (filteredRecipe of filteredRecipes(); track filteredRecipe.id) {
       <app-recipe-card
         [recipe]="filteredRecipe"
-        (toggleFavorite)="recipeService.toggleFavorite($event)"
-        (deleteRecipe)="recipeService.deleteRecipe($event)"
+        (toggleFavorite)="onToggleFavorite($event)"
+        (deleteRecipe)="onDeleteRecipe($event)"
       />
     } @empty {
       <p class="empty-state">No recipes in your recipe box yet!</p>
@@ -62,8 +61,7 @@
   <form
     class="modal-form"
     (submit)="
-      onAddRecipe(recipeModal, titleInput, descriptionInput, timeInput, difficultySelect);
-      $event.preventDefault()
+      onAddRecipe($event, recipeModal, titleInput, descriptionInput, timeInput, difficultySelect)
     "
   >
     <div class="form-group">
@@ -94,7 +92,7 @@
       </select>
     </div>
     <button class="btn-modal btn-modal-add" type="submit">Add Recipe</button>
-    <button class="btn-modal btn-modal-cancel" type="button" (click)="recipeModal.close()">
+    <button class="btn-modal btn-modal-cancel" type="button" (click)="hideRecipeModal(recipeModal)">
       Cancel
     </button>
   </form>
